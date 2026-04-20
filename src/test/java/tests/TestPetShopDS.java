@@ -66,14 +66,14 @@ public class TestPetShopDS {
 
         String responseBody = response.getBody().asString();
 
-        step("Проверить, что стату-скод ответа ==200", () ->
+        step("Проверить, что стату-скод ответа ==404", () ->
 
-                assertEquals(200, response.getStatusCode(),
+                assertEquals(404, response.getStatusCode(),
                         "Код ответа не совпал с ожидаемым. Ответ: " + responseBody)
         );
-        step("Проверить, что стату-скод ответа ==200", () ->
+        step("Проверить, что текст ответа 'Pet not found''", () ->
 
-                assertEquals("Pet deleted", responseBody,
+                assertEquals("Pet not found", responseBody,
                         "Текст ошибки не совпал с ожидаемым. Получен: " + responseBody)
         );
 

@@ -9,7 +9,7 @@ import io.restassured.response.Response;
 import models.Pet;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvFileSource;
+
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static io.qameta.allure.Allure.step;
@@ -50,7 +50,7 @@ public class TestPetShopDS {
 
     @Test
     @Feature("Pet")
-    @Severity(SeverityLevel.CRITICAL)
+    @Severity(SeverityLevel.NORMAL)
     @Owner("dmitry shkolnik")
     public void testUpdateNonexistentPet() {
         Pet pet = new Pet();
@@ -74,7 +74,7 @@ public class TestPetShopDS {
                 assertEquals(404, response.getStatusCode(),
                         "Код ответа не совпал с ожидаемым. Ответ: " + responseBody)
         );
-        step("Проверить, что текст ответа 'Pet not found''", () ->
+        step("Проверить, что текст ответа 'Pet not found'", () ->
 
                 assertEquals("Pet not found", responseBody,
                         "Текст ошибки не совпал с ожидаемым. Получен: " + responseBody)
@@ -84,7 +84,7 @@ public class TestPetShopDS {
 
     @Test
     @Feature("Pet")
-    @Severity(SeverityLevel.CRITICAL)
+    @Severity(SeverityLevel.NORMAL)
     @Owner("dmitry shkolnik")
     public void testGetNonexistentPet() {
         Response response = step("Отправить GET запрос для получения информации о несуществующем питомце", () ->
@@ -102,7 +102,7 @@ public class TestPetShopDS {
                 assertEquals(404, response.getStatusCode(),
                         "Код ответа не совпал с ожидаемым. Ответ: " + responseBody)
         );
-        step("Проверить, что стату-скод ответа ==404", () ->
+        step("Проверить,  что текст ответа 'Pet not found'", () ->
 
                 assertEquals("Pet not found", responseBody,
                         "Текст ошибки не совпал с ожидаемым. Получен: " + responseBody)
@@ -113,7 +113,8 @@ public class TestPetShopDS {
     @CsvSource({
             "315,Bobby,available",
             "316,Tuzzy,pending",
-            "317, Snoopy,sold"
+            "317, Snoopy,sold",
+
     })
     @Feature("Pet")
     @Severity(SeverityLevel.CRITICAL)
@@ -151,4 +152,39 @@ public class TestPetShopDS {
         );
 
     }
+
+    @Test
+    @Feature("Pet")
+    @Severity(SeverityLevel.NORMAL)
+    @Owner("dmitry shkolnik")
+    public void testAddNonexistentStatusPet() {
+        Pet pet = new Pet();
+        pet.setId(9999);
+        pet.setName("Tuzy");
+        pet.setStatus("invalid_status");
+
+        Response response = step("Отправить PUT запрос на обновление несуществующего питомца", () ->
+
+                given()
+                        .contentType(ContentType.JSON)
+                        .header("Accept", "application/json")
+                        .body(pet)
+                        .when()
+                        .post(BASE_URL + "/pet"));
+
+        String responseBody = response.getBody().asString();
+
+        step("Проверить, что стату-скод ответа ==400", () ->
+
+                assertEquals(400, response.getStatusCode(),
+                        "Код ответа не совпал с ожидаемым. Ответ: " + responseBody)
+        );
+        step("Проверить, что текст ответа 'Invalid pet status. Valid values: [available, pending, sold'", () ->
+
+                assertEquals("Invalid pet status. Valid values: [available, pending, sold]", responseBody,
+                        "Текст ошибки не совпал с ожидаемым. Получен: " + responseBody)
+        );
+
+    }
+
 }

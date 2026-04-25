@@ -163,7 +163,7 @@ public class TestPetShopDS {
         pet.setName("Tuzy");
         pet.setStatus("invalid_status");
 
-        Response response = step("Отправить PUT запрос на обновление несуществующего питомца", () ->
+        Response response = step("Отправить POST запрос на добавление питомца с невалидным статусом", () ->
 
                 given()
                         .contentType(ContentType.JSON)
